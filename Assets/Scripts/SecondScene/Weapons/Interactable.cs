@@ -7,38 +7,48 @@ public class Interactable : MonoBehaviour
     [SerializeField]private float maxDist = 5f;
     [SerializeField] private KeyCode interactKey = KeyCode.E; 
     Camera mainCamera;
-    GameObject actualWeapon;
+    GameObject equippedWeapon;
     [SerializeField] private Transform weaponTransform;
-    void Start()
+    private void Start()
     {
         mainCamera = Camera.main;
     }
 
-    void Update()
+    private void Update()
     {
+        if (Input.GetKeyDown(interactKey))
+            TryInteractWithWeapon();
+    }
 
+    private void TryInteractWithWeapon()
+    {
         Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, maxDist))
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDist))
         {
-
-            if(hit.collider.gameObject.tag =="Weapon" && Input.GetKeyDown(interactKey))
-            {
-                if (actualWeapon !=null)
-                {
-                    actualWeapon.transform.SetParent(null);
-                    actualWeapon = null;
-                }
-                actualWeapon = hit.collider.gameObject;
-                actualWeapon.transform.SetParent(weaponTransform);
-                actualWeapon.transform.localPosition = new Vector3(0,0,0);
-                actualWeapon.transform.localRotation = Quaternion.identity;
-
-            }
-
-            
+            if (hit.collider.CompareTag("Weapon"))
+                InteractWithWeapon(hit.collider.gameObject.GetComponent<Rigidbody>());
         }
+    }
+
+    private void InteractWithWeapon(Rigidbody weaponRigidbody)
+    {
+        if (equippedWeapon != null)
+            UnequipCurrentWeapon();
+
+        equippedWeapon = weaponRigidbody.gameObject;
+        equippedWeapon.transform.SetParent(weaponTransform);
+        equippedWeapon.transform.localPosition = Vector3.zero;
+        equippedWeapon.transform.localRotation = Quaternion.identity;
+        equippedWeapon.GetComponent<Weapon>().SetEquipped(true);
+        weaponRigidbody.isKinematic = true;
+    }
+
+    private void UnequipCurrentWeapon()
+    {
+        equippedWeapon.GetComponent<Rigidbody>().isKinematic = false;
+        equippedWeapon.GetComponent<Weapon>().SetEquipped(false);
+        equippedWeapon.transform.SetParent(null);
+        equippedWeapon = null;
     }
 }

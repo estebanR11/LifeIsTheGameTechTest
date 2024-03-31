@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a84e84179b2c64fb7fa7c7fa5d3466, type: 3}
   m_Name: Parabolic
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 0}
-  fireRate: 0
-  damage: 0
-  range: 0
+  bulletPrefab: {fileID: 8811624396720894922, guid: 9d4ab99f6189dd740a779a1ee7727c85, type: 3}
+  fireRate: 2
+  damage: 100
+  range: 30
